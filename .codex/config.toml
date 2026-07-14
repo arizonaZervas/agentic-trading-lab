@@ -1,0 +1,12 @@
+# Repository tasks may inspect the dedicated Agentic account, but broker writes
+# stay outside this project until the authenticated approval workflow exists.
+[mcp_servers.robinhood]
+enabled_tools = [
+  "get_accounts",
+  "get_portfolio",
+  "get_equity_positions",
+  "get_equity_orders",
+  "get_equity_quotes",
+  "get_equity_historicals",
+  "get_equity_tradability",
+]

@@ -1,7 +1,7 @@
 # Trading-agent discovery research
 
 **Date:** 2026-07-12
-**Decision:** Build a paper-only deterministic strategy laboratory. Do not connect a live broker order tool yet.
+**Decision:** Keep strategy logic deterministic and paper/shadow-only. Use the connected broker only through a separately approved, journaled manual integration test until the evidence and approval gates are satisfied.
 
 This is product and engineering research, not investment advice or a promise of returns.
 
@@ -97,10 +97,11 @@ The SEC/FINRA/NASAA [AI investment-fraud alert](https://www.investor.gov/introdu
 
 ## Product decision
 
-The first build is a local TypeScript strategy laboratory with two outputs:
+The first build is a local TypeScript strategy laboratory with three outputs:
 
 - a cost-aware historical backtest against buy-and-hold; and
-- a month-end target-allocation proposal that cannot place an order.
+- a month-end target-allocation proposal that cannot place an order; and
+- a deterministic Tuesday/Friday morning shadow report from a provenance-bearing SPY snapshot that cannot place an order.
 
 The original slow-trend rule and boundaries are:
 
@@ -112,15 +113,17 @@ The original slow-trend rule and boundaries are:
 - configurable per-side slippage;
 - $100 research-cap validation;
 - no options, leverage, shorting, crypto, intraday trading, news sentiment, or LLM-generated orders; and
-- no Robinhood credentials or MCP connection in the prototype.
+- no Robinhood credential, account identifier, or broker dependency in repository code; the external MCP connection is treated as a separate sensitive adapter.
 
 This does not target a monthly dollar profit. It tests whether the data, signal, risk, and audit path are correct and whether a frozen rule produces positive after-cost excess return versus same-period SPY buy-and-hold. The slow-trend rule remains a baseline candidate, not the presumed winner.
 
 On 2026-07-13 the owner registered a second candidate, `SPY_CORE_PLUS_DIP_V1`, without replacing the baseline. It invests $60 as a core, reserves four $10 envelopes for first crossings of 2%, 5%, 8%, and 12% drawdowns from the rolling 20-session adjusted-close high, evaluates Tuesday and Friday, and simulates at the next observed open. It never sells or replenishes cash. [ADR 0006](../decisions/0006-core-plus-dip-research-candidate.md) freezes the full experiment and keeps ordinary SPY buy-and-hold as the benchmark. Synthetic tests prove the comparison can favor either side; they are engineering evidence, not performance evidence.
 
-## Gate before any live-money adapter
+The owner subsequently selected a morning operational variant, `SPY_CORE_PLUS_DIP_MORNING_V1`, so the report arrives before work. At 6:35 AM Pacific on Tuesday and Friday it uses the immediately prior completed NYSE session close for its deterministic signal and shows Robinhood's exact 6:30 regular-session one-minute opening bar only as gap context. It cannot claim a fill at the already elapsed opening print. The combined report may reconcile the dedicated Agentic account but cannot review, place, cancel, or approve an order; any live order still needs a new current quote, broker review, and exact intent-bound owner approval. [ADR 0009](../decisions/0009-morning-core-plus-dip-candidate.md) keeps ADR 0006's candidate frozen and treats the local host and connectors as best-effort rather than a guaranteed scheduler.
 
-Live order placement requires a separate decision and implementation. At minimum:
+## Gate before strategy-driven live trading
+
+The one-off small manual order is integration evidence only and does not satisfy this gate. Strategy-driven live order placement requires a separate implementation. At minimum:
 
 1. use a licensed/reliable adjusted total-return data source and document corporate-action handling;
 2. freeze the rule before the final evaluation period;

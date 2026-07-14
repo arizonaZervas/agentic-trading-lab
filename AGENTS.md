@@ -34,6 +34,7 @@ Build a maintainable full-stack product while helping a backend/distributed-syst
 - Default to a modular monolith. Do not introduce microservices, queues, caches, event buses, or generic abstraction layers without an observed need and an ADR.
 - Keep domain rules independent of UI frameworks, HTTP handlers, database clients, and deployment vendors.
 - Treat all financial calculations as deterministic domain logic with explicit units, time assumptions, rounding rules, and tests. Never present projections as guarantees.
+- Keep the repository-scoped Robinhood MCP surface read-only. `.codex/config.toml` intentionally allowlists only the seven market/account read tools used by shadow reporting; broadening that list requires explicit owner approval, an ADR update, and a fresh-process tool-surface smoke test.
 - Keep authorization on trusted server/database boundaries. Client-side visibility checks are not authorization.
 - Changes to dependencies, persistence, authentication, public APIs, or deployment architecture require explicit rationale. Prefer mature, well-supported dependencies and commit lockfiles.
 - Database schema changes must be reproducible migrations committed to the repository. Production data must never be the only copy of schema intent.
@@ -74,6 +75,8 @@ Build a maintainable full-stack product while helping a backend/distributed-syst
 - Full prototype check: `npm run check`
 - Backtest: `npm run backtest -- --csv /absolute/path/to/prices.csv`
 - Core-plus-dip backtest: `npm run backtest:core-dip -- --csv /absolute/path/to/prices.csv`
+- Core-plus-dip shadow report: `npm run report:core-dip -- --snapshot /absolute/path/to/spy-snapshot.json --experiment-start YYYY-MM-DD`
+- Morning core-plus-dip shadow report: `npm run report:core-dip:morning -- --snapshot /absolute/path/to/spy-morning-snapshot.json --experiment-start YYYY-MM-DD`
 - Paper signal: `npm run signal -- --csv /absolute/path/to/prices.csv --confirmed-month-end YYYY-MM-DD`
 
-No formatter, linter, production build, end-to-end test, migration, local service, scheduler, or live broker command exists yet. Do not guess one; add and document it when that surface is implemented.
+No formatter, linter, production build, end-to-end test, migration, local service, in-repository scheduler, or live broker command exists yet. A local Codex automation schedules the read-only Tuesday/Friday 6:35 AM Pacific morning report under ADR 0009, while ADR 0008's safety boundary remains in force; do not treat it as an execution service. Do not guess unimplemented commands; add and document them when that surface is implemented.
