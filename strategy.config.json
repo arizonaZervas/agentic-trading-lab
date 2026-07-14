@@ -1,0 +1,8 @@
+{
+  "symbol": "SPY",
+  "movingAverageMonths": 10,
+  "startingCashUsd": 100,
+  "slippageBpsPerSide": 10,
+  "fixedFeeUsdPerOrder": 0,
+  "paperOnly": true
+}

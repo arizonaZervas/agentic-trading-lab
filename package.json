@@ -1,0 +1,21 @@
+{
+  "name": "agentic-trading-lab",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "backtest": "node src/cli.ts backtest",
+    "backtest:core-dip": "node src/cli.ts core-dip-backtest",
+    "signal": "node src/cli.ts signal",
+    "test": "node --test test/*.test.ts",
+    "typecheck": "tsc --noEmit",
+    "check": "npm run typecheck && npm test"
+  },
+  "devDependencies": {
+    "@types/node": "26.1.1",
+    "typescript": "7.0.2"
+  }
+}

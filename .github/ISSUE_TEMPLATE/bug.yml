@@ -1,0 +1,47 @@
+name: Bug report
+description: Report a reproducible behavior that differs from expectations.
+title: "[Bug] "
+labels: []
+body:
+  - type: textarea
+    id: impact
+    attributes:
+      label: Impact
+      description: Who is affected, how badly, and is data or security at risk?
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction steps
+      placeholder: |
+        1. ...
+        2. ...
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence and environment
+      description: Include environment, commit/deployment, logs with sensitive data removed, screenshots, or recordings.
+    validations:
+      required: true
+  - type: textarea
+    id: regression
+    attributes:
+      label: Regression protection
+      description: What test or monitor should fail before the fix and pass afterward?
+    validations:
+      required: true

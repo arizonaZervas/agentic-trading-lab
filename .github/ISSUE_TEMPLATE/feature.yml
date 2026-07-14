@@ -1,0 +1,50 @@
+name: Product or engineering outcome
+description: Propose a bounded, verifiable improvement.
+title: ""
+labels: []
+body:
+  - type: textarea
+    id: outcome
+    attributes:
+      label: Outcome
+      description: What should become true for a user or the system?
+      placeholder: A user can...
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: Context and evidence
+      description: Why now? Link observations, incidents, research, designs, or ADRs.
+    validations:
+      required: true
+  - type: textarea
+    id: scope
+    attributes:
+      label: Scope and non-goals
+      description: State what is included and what should remain unchanged.
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      description: Include relevant success, loading, empty, error, and denied behavior.
+      placeholder: |
+        - [ ] ...
+    validations:
+      required: true
+  - type: textarea
+    id: verification
+    attributes:
+      label: Verification
+      description: What automated checks and runtime or browser evidence will prove completion?
+    validations:
+      required: true
+  - type: textarea
+    id: risk
+    attributes:
+      label: Data, security, architecture, and rollout considerations
+      description: Note sensitive data, authorization, migrations, dependencies, platform coupling, observability, or rollback implications. Write "None identified" when appropriate.
+    validations:
+      required: true
