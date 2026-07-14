@@ -1,0 +1,12 @@
+{
+  "symbol": "SPY",
+  "startingCashUsd": 100,
+  "coreAllocationPct": 60,
+  "drawdownLookbackTradingDays": 20,
+  "drawdownTiersPct": [2, 5, 8, 12],
+  "trancheUsd": 10,
+  "evaluationWeekdays": ["TUESDAY", "FRIDAY"],
+  "slippageBpsPerSide": 10,
+  "fixedFeeUsdPerOrder": 0,
+  "paperOnly": true
+}

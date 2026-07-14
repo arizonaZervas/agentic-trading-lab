@@ -53,10 +53,14 @@ npm test
 npm run check
 npm run backtest -- --csv /absolute/path/to/prices.csv
 npm run backtest:core-dip -- --csv /absolute/path/to/prices.csv
+npm run report:core-dip -- --snapshot /absolute/path/to/spy-snapshot.json --experiment-start YYYY-MM-DD
+npm run report:core-dip:morning -- --snapshot /absolute/path/to/spy-morning-snapshot.json --experiment-start YYYY-MM-DD
 npm run signal -- --csv /absolute/path/to/prices.csv --confirmed-month-end YYYY-MM-DD
 ```
 
-There is no formatter, linter, production build, migration, browser test, database, local service, scheduler, or live broker command yet. Do not invent substitutes; add and document each when the corresponding product surface exists.
+There is no formatter, linter, production build, migration, browser test, database, local service, in-repository scheduler, or live broker command yet. Do not invent substitutes; add and document each when the corresponding product surface exists. [ADR 0008](decisions/0008-local-shadow-report-automation.md), as partially superseded by [ADR 0009](decisions/0009-morning-core-plus-dip-candidate.md), selects a local Codex automation as an external, read-only scheduler for shadow reports only.
+
+For the shadow workflow, verify the Tuesday/Friday 6:35 AM `America/Los_Angeles` cadence and inspect the combined Codex task result and any email report. The signal must use the immediately prior completed NYSE session's explicitly adjusted close; preserve the raw SIP-settled close as a separate provenance field and never compare or merge the two price units without the recorded adjustment source. The exact completed 6:30 regular-session one-minute bar is context only and cannot become a retroactive opening fill. A Monday/Wednesday/Thursday read-only reconciliation check sends email only for an outstanding or changed approved order. Published full-day market closures are skipped, not shifted; dates beyond the bounded 2026-2028 calendar fail closed. A stale, future-dated, unrecognized-source, interpolated, incomplete, late, ambiguous, halted, untradable, unit-mismatched, semantically invalid, or unavailable prior close, adjusted history, opening bar, account, or order state must produce a blocked evaluation and no proposal. Missing expected output is a failed operational check, not evidence that no action was needed. In a fresh project-scoped Codex process, enumerate the Robinhood surface and prove that only the seven allowlisted read tools exist and review/place/cancel are unavailable. No scheduled task may review, place, or cancel orders, and neither a report nor an email reply constitutes trade approval. A later live order requires a new current quote, broker review, and a fresh exact approval outside the project boundary until the authenticated adapter exists.
 
 ## Branching and release
 

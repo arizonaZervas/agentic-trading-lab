@@ -1,6 +1,6 @@
 # Codex setup and capability policy
 
-**Last verified:** 2026-07-11 with `codex-cli 0.144.0-alpha.4`
+**Last verified:** 2026-07-13 with `codex-cli 0.144.2`
 
 This document separates repository instructions, machine-level capabilities, and product dependencies. They solve different problems and should not be accumulated indiscriminately.
 
@@ -13,6 +13,7 @@ This document separates repository instructions, machine-level capabilities, and
 - GitHub integration is installed and enabled; the public canonical remote is [arizonaZervas/agentic-trading-lab](https://github.com/arizonaZervas/agentic-trading-lab).
 - The official shadcn/ui project skill is installed in `.agents/skills/shadcn`. Its source lock is recorded in `skills-lock.json`; it becomes project-aware when shadcn creates `components.json`.
 - `./scripts/check-foundation.sh` passes locally and is wired into GitHub Actions.
+- Project-scoped `.codex/config.toml` allowlists exactly `get_accounts`, `get_portfolio`, `get_equity_positions`, `get_equity_orders`, `get_equity_quotes`, `get_equity_historicals`, and `get_equity_tradability` for Robinhood. The foundation check pins that exact list, and a fresh read-only Codex process launched from this repository saw those seven tools and reported equity review, placement, and cancellation unavailable without reading account data.
 
 The OpenAI manual-download helper currently fails because the server response lacks the helper's expected integrity header. This does not block official documentation access because the developer-docs MCP was exercised successfully. Do not claim the helper itself works until a later smoke test passes.
 
@@ -95,7 +96,9 @@ The most recent smoke test passed both. It was run with `--ephemeral` and `--san
 
 ## When to add project config
 
-Do not add `.codex/config.toml` merely because the file exists as an option. Add it when this trusted repository needs a setting different from the user's defaults and the key is documented as project-overridable. The attempted whole-plugin project override was not established by current public documentation or the CLI listing behavior, so no speculative project config has been committed.
+Do not add `.codex/config.toml` merely because the file exists as an option. This trusted repository now has one documented exception: its Robinhood MCP `enabled_tools` allowlist removes all broker writes from fresh project tasks, including local automations, while leaving the user's global MCP registration unchanged. The configuration reference documents `mcp_servers.<id>.enabled_tools` as an allowlist and project-scoped config as a supported override. `codex mcp get robinhood --json` and a fresh ephemeral tool-surface inspection both verified the merged result.
+
+This is deliberately a project-wide boundary, not an automation-only setting. The desktop automation field `localEnvironmentConfigPath` applies to worktree setup and is not a separate MCP policy for these local cron runs. Until an authenticated approval adapter exists, perform any explicitly approved manual broker write from a separate projectless task rather than broadening this repository's allowlist. Any later change must update the safety ADRs and repeat the fresh-process negative smoke test.
 
 ## Setup change protocol
 

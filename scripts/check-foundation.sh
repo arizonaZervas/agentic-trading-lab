@@ -5,6 +5,7 @@ repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$repo_root"
 
 required_files=(
+  .codex/config.toml
   .agents/skills/shadcn/SKILL.md
   skills-lock.json
   AGENTS.md
@@ -51,6 +52,31 @@ text_paths = [
     *sorted((root / "scripts").rglob("*.sh")),
 ]
 problems = []
+
+robinhood_config = (root / ".codex" / "config.toml").read_text(encoding="utf-8")
+allowlist_match = re.search(
+    r"\[mcp_servers\.robinhood\]\s*enabled_tools\s*=\s*\[(.*?)\]",
+    robinhood_config,
+    re.DOTALL,
+)
+expected_robinhood_tools = [
+    "get_accounts",
+    "get_portfolio",
+    "get_equity_positions",
+    "get_equity_orders",
+    "get_equity_quotes",
+    "get_equity_historicals",
+    "get_equity_tradability",
+]
+configured_robinhood_tools = (
+    re.findall(r'"([^"]+)"', allowlist_match.group(1))
+    if allowlist_match is not None
+    else []
+)
+if configured_robinhood_tools != expected_robinhood_tools:
+    problems.append(
+        ".codex/config.toml: Robinhood enabled_tools must equal the seven-tool read-only allowlist"
+    )
 
 for path in text_paths:
     text = path.read_text(encoding="utf-8")

@@ -9,6 +9,8 @@
   "scripts": {
     "backtest": "node src/cli.ts backtest",
     "backtest:core-dip": "node src/cli.ts core-dip-backtest",
+    "report:core-dip": "node src/cli.ts core-dip-report",
+    "report:core-dip:morning": "node src/cli.ts core-dip-morning-report",
     "signal": "node src/cli.ts signal",
     "test": "node --test test/*.test.ts",
     "typecheck": "tsc --noEmit",

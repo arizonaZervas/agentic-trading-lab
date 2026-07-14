@@ -19,6 +19,7 @@ test-results/
 
 # Local scratch artifacts
 tmp/
+.trading-state/
 
 # Derived local code-knowledge graph; rebuild it from source instead of committing it.
 .codebase-memory/

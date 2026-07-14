@@ -1,19 +1,19 @@
 # Product brief
 
-**Status:** Paper-only research prototype built; bounded tiny-live implementation authorized but not connected or activated
+**Status:** Paper-only strategy engine built; broker/notification connections smoke-tested; read-only morning shadow scheduling accepted; strategy-driven live trading not activated
 
 ## Product thesis
 
 Build a transparent personal strategy laboratory for the owner to test and operate a small, rules-based trading workflow without trusting influencer claims or giving an LLM uncontrolled brokerage access. The research succeeds only if it produces reproducible, after-cost evidence of outperforming an investable S&P 500 proxy without materially worse drawdown; it does not promise a monthly income.
 
-The initial $100 is a maximum future risk budget, not evidence that $100-$200 of monthly profit is feasible. No live funds or broker credentials enter the first slice.
+The $100 dedicated-account cap is a risk budget, not evidence that $100-$200 of monthly profit is feasible. A single manually reviewed small SPY order was submitted as an external integration smoke test; it is not a strategy signal and does not activate the paper-only engine.
 
 ## Discovery answers
 
 1. **First user:** The owner, a US self-directed investor experimenting with a separate Robinhood Agentic account.
 2. **Painful job:** Turn a trading hypothesis into a repeatable, cost-aware decision and audit trail without emotional execution, opaque software, or free-form AI orders.
-3. **Smallest useful workflow:** Load symbol-bound daily open, close, and adjusted-close data, run frozen deterministic candidates over identical windows, compare each with SPY buy-and-hold, and emit paper-only results with trades, inputs, and assumptions. The original month-end rule can also emit a target-allocation proposal.
-4. **Trust boundary:** The first slice is local and stores only market data and simulated results. It has no Robinhood token, account number, personal data, or order-placement capability. The authorized next phase connects a specifically allowlisted Agentic account, but Robinhood's MCP can expose account identifiers, positions, balances, and transaction history across Robinhood accounts. Secrets, account verification, order idempotency, reconciliation, and the kill switch therefore remain trusted boundaries.
+3. **Smallest useful workflow:** Load symbol-bound daily open, close, and adjusted-close data, run frozen deterministic candidates over identical windows, compare each with SPY buy-and-hold, and emit paper-only results with trades, inputs, assumptions, and a Tuesday/Friday morning shadow report based on the immediately prior completed session. The original month-end rule can also emit a target-allocation proposal.
+4. **Trust boundary:** Repository code is local and stores only market data, simulated results, and ignored local journals. It has no broker dependency, credential, or order-placement capability. The external broker connection can expose account identifiers, positions, balances, and transaction history across accounts even though writes are confined to the dedicated agent account. Secrets, account verification, order idempotency, reconciliation, scheduler prompts, notification redaction, and the kill switch therefore remain trusted boundaries.
 5. **Decision posture:** Self-directed educational/research software. It must not describe projections as guaranteed returns or silently turn LLM output into a trade.
 6. **Success signal:** On a sealed out-of-sample period, a frozen candidate has positive after-cost excess total return versus same-period SPY buy-and-hold, has positive excess return in a majority of predefined walk-forward windows, and does not exceed the benchmark's maximum drawdown by more than a provisional five percentage points. Scheduled shadow operation must also complete 60 consecutive checks spanning at least 12 weeks and three month ends without stale/duplicate/audit failures, and the owner must be able to independently reproduce each proposal.
 7. **Learning goal:** Balance dependable domain engineering with later frontend/deployment learning. Correctness and observability come before a dashboard.
@@ -35,10 +35,11 @@ The initial $100 is a maximum future risk budget, not evidence that $100-$200 of
 - A deterministic TypeScript engine preserves the published slow-trend baseline and adds the frozen `SPY_CORE_PLUS_DIP_V1` candidate in [ADR 0006](decisions/0006-core-plus-dip-research-candidate.md).
 - CLI commands validate daily CSV input, run cost-aware backtests over identical strategy/benchmark windows, and compare each candidate with ordinary SPY buy-and-hold.
 - A second CLI path emits a month-end target-allocation proposal only after explicit month-end confirmation.
+- A deterministic snapshot/report path validates official-close provenance, rejects interpolated data, and emits stable shadow proposal keys without a broker write. `SPY_CORE_PLUS_DIP_MORNING_V1` uses the immediately prior completed NYSE close at Tuesday/Friday 6:35 AM Pacific and treats the exact 6:30 regular-session opening bar as context only; ADR 0006's original candidate remains frozen.
 - The output states assumptions and never places a broker order.
 - Tests prove next-session execution, Tuesday/Friday cadence, one-time tier and reserve behavior, slippage and fixed fees, benchmark neutrality, date-bound month-end confirmation, input validation, the $100 research cap, and the absence of a live mode.
 
-Non-goals of this code slice are parameter optimization, a screener, news/social sentiment, LLM forecasting, a web UI, persistence, live/unattended scheduling, Robinhood connectivity, and live trading. A paper/shadow scheduler is permitted as the next step because it is required to gather the operational evidence in [the research report](research/trading-agent-discovery.md).
+Non-goals of this code slice are parameter optimization, a screener, news/social sentiment, LLM forecasting, a web UI, shared persistence, an in-repository broker adapter, unattended execution, and strategy-driven live trading. The best-effort external local scheduler is read-only and exists only to gather the operational evidence in [the research report](research/trading-agent-discovery.md).
 
 ## Authorized next phase
 
@@ -87,3 +88,7 @@ Add dated interview notes, prototype observations, and decisions here or link to
 - **2026-07-12:** Owner explicitly accepted the possible loss of the dedicated Agentic account's full $100 and authorized building a bot that can place live trades. This authorizes the bounded implementation in [ADR 0004](decisions/0004-bounded-tiny-live-trading.md), not immediate activation of the current paper-only prototype.
 - **2026-07-12:** Owner expanded the intended major-ETF universe to the exact initial allowlist `SPY`, `QQQ`, `SMH`, and `SCHD`, and required a phone notification with rationale plus explicit approval before every live order. [ADR 0005](decisions/0005-human-approved-etf-order-workflow.md) records the intent-bound approval workflow; unattended execution is no longer authorized.
 - **2026-07-13:** Owner chose `SPY_CORE_PLUS_DIP_V1` as a second candidate while retaining ordinary SPY buy-and-hold as the benchmark and the slow-trend rule as a separate baseline. The choice registers an experiment, not a claim that buying dips outperforms; same-window after-cost evidence must decide.
+- **2026-07-13:** Broker read access was verified and was broader than the dedicated agent account; only that dedicated account was write-enabled for the agent. Broad account metadata visibility remains a privacy boundary even when other accounts cannot be traded through the agent.
+- **2026-07-13:** After broker review, quote disclosure, exact owner approval, preflight, and a persisted local idempotency record, one small regular-hours SPY market order was submitted as a manual pipeline smoke test. It is not the candidate's core purchase or a consumed dip tier. A redacted notification report was delivered.
+- **2026-07-13:** [ADR 0008](decisions/0008-local-shadow-report-automation.md) accepted local read-only Codex schedules for post-close evaluation and market-open reconciliation. Scheduled runs may reconcile the dedicated account and email a redacted report, but cannot review, place, cancel, or approve an order.
+- **2026-07-13:** Owner moved the active twice-weekly review to Tuesday/Friday at 6:35 AM Pacific so it arrives before work. [ADR 0009](decisions/0009-morning-core-plus-dip-candidate.md) registers `SPY_CORE_PLUS_DIP_MORNING_V1`: its signal uses the immediately prior completed NYSE close, its exact regular-session opening bar is context rather than a retroactive fill, and its combined morning report remains read-only and best-effort. ADR 0006's original v1 stays frozen.
